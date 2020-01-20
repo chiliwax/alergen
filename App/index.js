@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
     View,
     Text,
@@ -12,7 +14,8 @@ import Svg, { Image, Circle, ClipPath } from 'react-native-svg'
 import Animated, { Easing } from 'react-native-reanimated'
 import { TapGestureHandler, State } from 'react-native-gesture-handler'
 import { NavigationActions, StackActions } from 'react-navigation';
-
+import ActionCreators from './redux/actions'
+import local_db from './services/local_db';
 
 const resetAction = StackActions.reset({
     index: 0,
@@ -51,7 +54,7 @@ function runTiming(clock, value, dest) {
     ]);
 }
 
-export default class AllergApp extends Component {
+class AllergApp extends Component {
     constructor() {
         super()
         this.buttonOpacity = new Value(1)
@@ -62,6 +65,11 @@ export default class AllergApp extends Component {
                 ])
             }
         ])
+
+        const sequelize_instance = new local_db();
+        sequelize_instance.ready().then(() => {
+            this.props.actions.on_db_opened(sequelize_instance);
+        });
 
         this.onCloseState = event([
             {
@@ -220,3 +228,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2
     }
 })
+
+const mapStateToProps = state => {
+    console.log(state);
+    return {
+        sequelize: state.app.sequelize_instance,
+    };
+};
+
+const mapDispatchToProps = dispatch => ({
+    actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AllergApp);

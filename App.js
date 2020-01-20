@@ -1,9 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {Asset} from 'expo-asset';
-import {AppLoading} from 'expo';
+import { Asset } from 'expo-asset';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { AppLoading } from 'expo';
+import createSagaMiddleware from 'redux-saga';
 import AppStackNav from "./navigators/AppStackNav";
 import NavigationService from './navigators/NavigationService';
+import reducers from './App/redux/reducers';
+import sagas from './App/redux/sagas';
+
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(reducers, applyMiddleware(sagaMiddleware));
+// export default store;
+sagaMiddleware.run(sagas);
 
 function cacheImages(images){
   return images.map(image => {
@@ -29,18 +39,26 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isReady) {
-      return (
-        <AppLoading
-          startAsync={this._loadAssetsAssync}
-          onFinish={() => this.setState({isReady: true})}
-          onError={console.warn}
-        />
-      );
+    const get_content = () => {
+      if (!this.state.isReady) {
+        return (
+          <AppLoading
+            startAsync={this._loadAssetsAssync}
+            onFinish={() => this.setState({isReady: true})}
+            onError={console.warn}
+          />
+        );
+      }
+      return <AppStackNav ref={navigatorRef => {
+        NavigationService.setTopLevelNavigator(navigatorRef);
+      }}/>;
     }
-    return <AppStackNav ref={navigatorRef => {
-      NavigationService.setTopLevelNavigator(navigatorRef);
-    }}/>;
+
+    return (
+      <Provider store={ store }>
+        { get_content() }
+      </Provider>
+    )
   }
 }
 
