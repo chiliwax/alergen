@@ -8,7 +8,8 @@ import {
     Dimensions,
     TextInput,
     KeyboardAvoidingView,
-    Alert
+    Alert,
+    AsyncStorage,
 } from "react-native";
 import Svg, { Image, Circle, ClipPath } from 'react-native-svg'
 import Animated, { Easing } from 'react-native-reanimated'
@@ -115,6 +116,32 @@ class AllergApp extends Component {
             extrapolate: Extrapolate.CLAMP
         })
     }
+
+    Skip() {
+        Alert.alert('Skip LogIn','Remember my choice ?',[
+            { text: 'No', onPress: () => console.log('dont remember skip') &
+            this.setkey('false')
+            & this.props.navigation.dispatch(resetAction) },
+            { text: 'Yes', onPress: () => console.log('remember skip') & 
+            this.setkey('true')
+            &this.props.navigation.dispatch(resetAction)},
+        ])
+    
+    }
+    async setkey(str){
+        await AsyncStorage.setItem("@MySuperStore:key", str);
+    }
+   async componentDidMount(){
+    let storedValue = await AsyncStorage.getItem("@MySuperStore:key");
+    if (storedValue == 'true') {
+        this.props.navigation.dispatch(resetAction)
+    } 
+    if (storedValue == null) {
+      console.log("Writing data!");
+      storedValue = await AsyncStorage.setItem("@MySuperStore:key", "false");
+    }
+
+    }
     render() {
         const { navigate } = this.props.navigation;
         return (
@@ -151,7 +178,7 @@ class AllergApp extends Component {
                         </Animated.View>
                     </TapGestureHandler>
                     <Animated.View style={{ ...styles.button, backgroundColor: '#71c232', zIndex: 3, opacity: this.buttonOpacity, transform: [{ translateY: this.buttonY }] }}>
-                        <Text onPress={() => this.props.navigation.dispatch(resetAction)} style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>SKIP</Text>
+                        <Text onPress={() => this.Skip()} style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>SKIP</Text>
                     </Animated.View>
                     <Animated.View style={{ backgroundColor: 'white', borderTopLeftRadius: 30, borderTopRightRadius: 30, zindex: this.textInputZindex, opacity: this.textInputOpacity, transform: [{ translateY: this.textInputY }], height: height / 3 + 0, ...StyleSheet.absoluteFill, top: null, justifyContent: 'center' }}>
                         <TapGestureHandler onHandlerStateChange={this.onCloseState}>

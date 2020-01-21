@@ -27,7 +27,7 @@ const TabNavigator = createBottomTabNavigator({
             tabBarLabel: 'Profile',
             tabBarIcon: ({ tintColor }) => (
                 <Icon name="md-person" color={tintColor} size={25} />
-            )
+            ),
         }
     },
     Camera: {
@@ -36,7 +36,16 @@ const TabNavigator = createBottomTabNavigator({
             tabBarLabel: 'Scan',
             tabBarIcon: ({ tintColor }) => (
                 <Icon name="md-barcode" color={tintColor} size={25} />
-            )
+            ),
+            tabBarOptions: {
+                style: {
+                    backgroundColor:'rgba(50, 50, 50, 0.9)', 
+                    borderTopColor: '#323232',
+                    position: 'absolute',
+                    left: 0,
+                    bottom: 0,
+                    right: 0}
+            },
         }
     },
     History: {
