@@ -1,18 +1,24 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions, Button, Alert } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Button, Alert, StatusBar, AsyncStorage } from 'react-native';
 import NavigationService from '../../navigators/NavigationService';
 
 const { width, height } = Dimensions.get('window')
 
 export default class ProfilePage extends React.Component {
+
+	async resetlogin() {
+		await AsyncStorage.setItem("@MySuperStore:key", "false");
+	}
+
 	render() {
 		return (
 
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<StatusBar barStyle="dark-content" />
 				<Text>Profile !</Text>
 				<View style={styles.button}>
 					<Button color='black' title="Sign-In" onPress={() => 
-						Alert.alert('Go to LOGIN','Are you sure ? ',[{text:'No'},{text:'Yes', onPress:()=>NavigationService.navigate('Login')}
+						Alert.alert('Go to LOGIN','Are you sure ? ',[{text:'No'},{text:'Yes', onPress:()=> this.resetlogin() & NavigationService.navigate('Login')}
 						])
 						} />
 				</View>
